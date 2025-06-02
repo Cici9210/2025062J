@@ -1,8 +1,8 @@
-"""
-應用主題 (theme.dart)
-功能: 定義應用程式的視覺主題
-相依: Flutter SDK
-"""
+
+// 應用主題 (theme.dart)
+// 功能: 定義應用程式的視覺主題
+// 相依: Flutter SDK
+
 import 'package:flutter/material.dart';
 
 class AppTheme {

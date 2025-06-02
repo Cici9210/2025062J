@@ -1,8 +1,7 @@
-"""
-好友服務 (friend_service.dart)
-功能: 提供好友相關的API服務
-相依: http
-"""
+// 好友服務 (friend_service.dart)
+// 功能: 提供好友相關的API服務
+// 相依: http
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/app_config.dart';

@@ -1,8 +1,7 @@
-"""
-裝置服務 (device_service.dart)
-功能: 提供裝置相關API調用
-相依: http
-"""
+// 裝置服務 (device_service.dart)
+// 功能: 提供裝置相關API調用
+// 相依: http
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/app_config.dart';

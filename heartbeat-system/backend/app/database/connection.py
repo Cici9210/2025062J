@@ -24,3 +24,12 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # 宣告映射基底類別
 Base = declarative_base()
+
+# 依賴注入函數
+def get_db():
+    """獲取資料庫會話"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

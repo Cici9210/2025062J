@@ -1,8 +1,7 @@
-"""
-好友狀態提供者 (friend_provider.dart)
-功能: 管理好友列表和狀態
-相依: flutter
-"""
+// 好友狀態提供者 (friend_provider.dart)
+// 功能: 管理好友列表和狀態
+// 相依: flutter
+
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../models/friend_request.dart';

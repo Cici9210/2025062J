@@ -1,8 +1,7 @@
-"""
-心臟動畫元件 (heart_animation.dart)
-功能: 提供心臟脈動視覺效果
-相依: flutter
-"""
+// 心臟動畫元件 (heart_animation.dart)
+// 功能: 提供心臟脈動視覺效果
+// 相依: flutter
+
 import 'package:flutter/material.dart';
 
 class HeartAnimation extends StatefulWidget {

@@ -1,8 +1,7 @@
-"""
-互動狀態提供者 (interaction_provider.dart)
-功能: 管理互動和配對狀態
-相依: flutter
-"""
+// 互動狀態提供者 (interaction_provider.dart)
+// 功能: 管理互動和配對狀態
+// 相依: flutter
+
 import 'package:flutter/material.dart';
 import '../models/interaction.dart';
 import '../services/device_service.dart';

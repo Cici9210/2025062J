@@ -1,8 +1,7 @@
-"""
-Flutter應用打包設置 (pubspec.yaml)
-功能: 定義Flutter應用的相依套件和資源
-執行方式: 在frontend目錄下執行 flutter pub get
-"""
+# Flutter應用打包設置 (pubspec.yaml)
+# 功能: 定義Flutter應用的相依套件和資源
+# 執行方式: 在frontend目錄下執行 flutter pub get
+
 name: heartbeat_app
 description: 壓感互動裝置的Flutter客戶端
 

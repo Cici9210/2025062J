@@ -1,8 +1,7 @@
-"""
-認證服務 (auth_service.dart)
-功能: 提供使用者認證、註冊相關API調用
-相依: http
-"""
+// 認證服務 (auth_service.dart)
+// 功能: 提供使用者認證、註冊相關API調用
+// 相依: http
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/app_config.dart';

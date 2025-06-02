@@ -1,8 +1,7 @@
-"""
-使用者模型 (user.dart)
-功能: 定義使用者資料模型
-相依: 無
-"""
+// 使用者模型 (user.dart)
+// 功能: 定義使用者資料模型
+// 相依: 無
+
 class User {
   final int id;
   final String email;

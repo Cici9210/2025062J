@@ -1,8 +1,7 @@
-"""
-裝置綁定畫面 (bind_device_screen.dart)
-功能: 允許使用者輸入裝置ID並綁定到帳號
-相依: flutter, provider
-"""
+// 裝置綁定畫面 (bind_device_screen.dart)
+// 功能: 允許使用者輸入裝置ID並綁定到帳號
+// 相依: flutter, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/device.dart';

@@ -1,8 +1,7 @@
-"""
-心臟互動畫面 (heart_interaction_screen.dart)
-功能: 提供心臟互動主介面
-相依: flutter, provider
-"""
+// 心臟互動畫面 (heart_interaction_screen.dart)
+// 功能: 提供心臟互動主介面
+// 相依: flutter, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/device.dart';

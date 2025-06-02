@@ -1,8 +1,8 @@
-"""
-好友列表畫面 (friend_list_screen.dart)
-功能: 顯示使用者的好友列表及其狀態
-相依: flutter, provider
-"""
+
+// 好友列表畫面 (friend_list_screen.dart)
+// 功能: 顯示使用者的好友列表及其狀態
+// 相依: flutter, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/user.dart';

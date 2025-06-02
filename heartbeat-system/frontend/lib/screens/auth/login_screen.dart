@@ -1,8 +1,7 @@
-"""
-登入畫面 (login_screen.dart)
-功能: 提供使用者登入介面
-相依: flutter, provider
-"""
+// 登入畫面 (login_screen.dart)
+// 功能: 提供使用者登入介面
+// 相依: flutter, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';

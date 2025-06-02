@@ -1,8 +1,7 @@
-"""
-認證狀態提供者 (auth_provider.dart)
-功能: 管理使用者認證狀態
-相依: flutter, shared_preferences
-"""
+// 認證狀態提供者 (auth_provider.dart)
+// 功能: 管理使用者認證狀態
+// 相依: flutter, shared_preferences
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';

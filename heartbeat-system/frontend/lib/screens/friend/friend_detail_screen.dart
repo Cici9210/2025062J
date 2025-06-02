@@ -1,8 +1,8 @@
-"""
-好友詳情畫面 (friend_detail_screen.dart)
-功能: 顯示好友心臟狀態及互動資訊
-相依: flutter, provider
-"""
+
+// 好友詳情畫面 (friend_detail_screen.dart)
+// 功能: 顯示好友心臟狀態及互動資訊
+// 相依: flutter, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/user.dart';

@@ -1,8 +1,7 @@
-"""
-註冊畫面 (register_screen.dart)
-功能: 提供使用者註冊介面
-相依: flutter, provider
-"""
+// 註冊畫面 (register_screen.dart)
+// 功能: 提供使用者註冊介面
+// 相依: flutter, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';

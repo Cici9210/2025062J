@@ -1,8 +1,7 @@
-"""
-首頁畫面 (home_screen.dart)
-功能: 系統主畫面，顯示已綁定裝置並允許導航到其他功能
-相依: flutter, provider
-"""
+// 首頁畫面 (home_screen.dart)
+// 功能: 系統主畫面，顯示已綁定裝置並允許導航到其他功能
+// 相依: flutter, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/device.dart';
@@ -12,7 +11,6 @@ import '../../services/device_service.dart';
 import '../device/bind_device_screen.dart';
 import '../interaction/heart_interaction_screen.dart';
 import '../friend/friend_list_screen.dart';
-import '../friend/friend_request_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

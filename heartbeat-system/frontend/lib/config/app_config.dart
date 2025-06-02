@@ -1,8 +1,7 @@
-"""
-應用程式配置 (app_config.dart)
-功能: 提供應用程式配置常數
-相依: 無
-"""
+// 應用程式配置 (app_config.dart)
+// 功能: 提供應用程式配置常數
+// 相依: 無
+
 class AppConfig {
   // API 基礎 URL
   static const String apiBaseUrl = 'http://localhost:8000';

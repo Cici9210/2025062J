@@ -1,8 +1,7 @@
-"""
-WebSocket服務 (websocket_service.dart)
-功能: 管理與後端的WebSocket連接
-相依: web_socket_channel
-"""
+// WebSocket服務 (websocket_service.dart)
+// 功能: 管理與後端的WebSocket連接
+// 相依: web_socket_channel
+
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;

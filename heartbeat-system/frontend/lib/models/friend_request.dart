@@ -1,8 +1,7 @@
-"""
-好友請求模型 (friend_request.dart)
-功能: 定義好友請求資料結構
-相依: 無
-"""
+// 好友請求模型 (friend_request.dart)
+// 功能: 定義好友請求資料結構
+// 相依: 無
+
 class FriendRequest {
   final int id;
   final int userIdFrom;

@@ -1,8 +1,7 @@
-"""
-互動模型 (interaction.dart)
-功能: 定義互動資料模型
-相依: 無
-"""
+// 互動模型 (interaction.dart)
+// 功能: 定義互動資料模型
+// 相依: 無
+
 class Interaction {
   final int id;
   final int userId;

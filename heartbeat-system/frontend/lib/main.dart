@@ -1,8 +1,7 @@
-"""
-主應用程式 (main.dart)
-功能: Flutter應用程式入口點，設定主題和路由
-相依: Flutter SDK, provider
-"""
+// 主應用程式 (main.dart)
+// 功能: Flutter應用程式入口點，設定主題和路由
+// 相依: Flutter SDK, provider
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,8 +1,7 @@
-"""
-裝置模型 (device.dart)
-功能: 定義裝置資料模型
-相依: 無
-"""
+// 裝置模型 (device.dart)
+// 功能: 定義裝置資料模型
+// 相依: 無
+
 class Device {
   final int id;
   final String deviceUid;
