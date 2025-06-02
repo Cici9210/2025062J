@@ -1,7 +1,7 @@
 
-// 待處理好友請求畫面 (friend_request_screen.dart)
-// 功能: 顯示使用者的待處理好友請求
-// 相依: flutter, provider
+//待處理好友請求畫面 (friend_request_screen.dart)
+//功能: 顯示使用者的待處理好友請求
+//相依: flutter, provider
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

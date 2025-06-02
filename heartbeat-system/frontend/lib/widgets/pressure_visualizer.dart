@@ -1,7 +1,7 @@
 
-// 壓力視覺化元件 (pressure_visualizer.dart)
-// 功能: 提供使用者互動的壓力視覺化介面
-// 相依: flutter
+//壓力視覺化元件 (pressure_visualizer.dart)
+//功能: 提供使用者互動的壓力視覺化介面
+//相依: flutter
 
 import 'package:flutter/material.dart';
 

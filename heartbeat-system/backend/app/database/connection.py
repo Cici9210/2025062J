@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # 資料庫連接字串 (應該從環境變數取得)
-SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://2j113:2j113@localhost/heartbeat_db"
+SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://10856045:10856045@localhost/heartbeat_db"
 
 # 建立資料庫引擎
 engine = create_engine(

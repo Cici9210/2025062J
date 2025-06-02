@@ -1,8 +1,7 @@
-"""
-資料庫建立腳本 (setup_db.sql)
-功能: 建立MySQL資料庫和所需表格
-執行方式: mysql -u [使用者名稱] -p < setup_db.sql
-"""
+-- 資料庫建立腳本 (setup_db.sql)
+-- 功能: 建立MySQL資料庫和所需表格
+-- 執行方式: mysql -u [使用者名稱] -p < setup_db.sql
+
 -- 創建資料庫
 CREATE DATABASE IF NOT EXISTS heartbeat_db;
 USE heartbeat_db;
@@ -58,6 +57,17 @@ CREATE TABLE IF NOT EXISTS friendships (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id_1 INT,
     user_id_2 INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id_1) REFERENCES users(id),
+    FOREIGN KEY (user_id_2) REFERENCES users(id)
+);
+
+-- 創建好友請求表
+CREATE TABLE IF NOT EXISTS friend_requests (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id_1 INT,
+    user_id_2 INT,
+    status VARCHAR(20) NOT NULL, -- "pending", "accepted", "rejected"
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id_1) REFERENCES users(id),
     FOREIGN KEY (user_id_2) REFERENCES users(id)

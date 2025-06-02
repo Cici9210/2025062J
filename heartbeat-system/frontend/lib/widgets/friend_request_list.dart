@@ -1,7 +1,7 @@
 
-// 好友請求列表 (friend_request_list.dart)
-// 功能: 顯示待處理的好友請求
-// 相依: flutter, provider
+//好友請求列表 (friend_request_list.dart)
+//功能: 顯示待處理的好友請求
+//相依: flutter, provider
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
