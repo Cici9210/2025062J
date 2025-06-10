@@ -34,6 +34,12 @@ def bind_device(db: Session, device_uid: str, user_id: int):
     return db_device
 
 
+def get_user_devices(db: Session, user_id: int):
+    """獲取用戶所有裝置"""
+    devices = db.query(models.Device).filter(models.Device.user_id == user_id).all()
+    return devices
+
+
 def get_device_status(db: Session, device_id: int, user_id: int):
     """獲取裝置狀態"""
     # 檢查裝置是否存在且屬於當前使用者

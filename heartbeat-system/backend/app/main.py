@@ -86,6 +86,12 @@ def bind_device(device_data: device.DeviceBind, db: Session = Depends(get_db),
                 current_user: models.User = Depends(auth_service.get_current_user)):
     return device_service.bind_device(db=db, device_uid=device_data.device_uid, user_id=current_user.id)
 
+@app.get("/api/devices", response_model=List[device.Device])
+def get_user_devices(db: Session = Depends(get_db),
+                     current_user: models.User = Depends(auth_service.get_current_user)):
+    """獲取當前使用者的所有裝置"""
+    return device_service.get_user_devices(db=db, user_id=current_user.id)
+
 @app.get("/api/devices/status/{device_id}", response_model=device.DeviceStatus)
 def get_device_status(device_id: int, db: Session = Depends(get_db),
                       current_user: models.User = Depends(auth_service.get_current_user)):

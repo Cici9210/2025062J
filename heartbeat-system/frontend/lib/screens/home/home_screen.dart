@@ -38,12 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       if (authProvider.token != null) {
-        // 這裡假設後端有獲取用戶裝置的API
-        // 真實實現中需要添加相應的服務方法
-        // 目前只是模擬數據
-        await Future.delayed(Duration(seconds: 1));
+        final devices = await _deviceService.getUserDevices(authProvider.token!);
         setState(() {
-          _devices = [];  // 實際應從API獲取
+          _devices = devices;
           _isLoading = false;
         });
       }
