@@ -14,7 +14,7 @@ from ..database import models, connection
 from ..schemas import auth, user
 from ..utils.security import verify_password, get_password_hash, SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 
 def get_user_by_email(db: Session, email: str):

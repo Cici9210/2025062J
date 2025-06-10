@@ -27,16 +27,12 @@ class AuthService {
       throw Exception('註冊失敗: ${response.body}');
     }
   }
-  
-  // 使用者登入
+    // 使用者登入
   Future<String> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/token'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'username': email,
-        'password': password,
-      },
+      body: 'username=${Uri.encodeComponent(email)}&password=${Uri.encodeComponent(password)}',
     );
     
     if (response.statusCode == 200) {

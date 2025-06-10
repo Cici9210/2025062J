@@ -302,8 +302,7 @@ class _FriendListScreenState extends State<FriendListScreen> {
       ),
     );
   }
-  
-  Future<void> _addFriend(String email) async {
+    Future<void> _addFriend(String email) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final friendProvider = Provider.of<FriendProvider>(context, listen: false);
     
@@ -317,10 +316,16 @@ class _FriendListScreenState extends State<FriendListScreen> {
         
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('好友添加請求已發送')),
-        );
-      } catch (e) {
+        );      } catch (e) {
+        // 簡化錯誤處理方式，無需複雜的條件判斷
+        String errorMessage = e.toString();
+        
+        // 提取出具體的錯誤訊息部分
+        final match = RegExp(r'Exception: (.+)').firstMatch(errorMessage);
+        final message = match?.group(1) ?? '添加好友失敗';
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('添加好友失敗: $e')),
+          SnackBar(content: Text(message)),
         );
       } finally {
         if (mounted) {

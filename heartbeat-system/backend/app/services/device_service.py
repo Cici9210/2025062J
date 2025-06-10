@@ -230,11 +230,11 @@ def create_friend_request(db: Session, friend_request: friend.FriendRequestCreat
     # 查詢目標用戶
     target_user = db.query(models.User).filter(models.User.email == friend_request.email).first()
     if not target_user:
-        raise HTTPException(status_code=404, detail="Target user not found")
+        raise HTTPException(status_code=404, detail="找不到此電子郵件的用戶")
     
     # 檢查是否是自己
     if target_user.id == user_id:
-        raise HTTPException(status_code=400, detail="Cannot add yourself as a friend")
+        raise HTTPException(status_code=400, detail="不能添加自己為好友")
     
     # 檢查是否已經是好友
     existing_friendship = db.query(models.Friendship).filter(
@@ -243,7 +243,7 @@ def create_friend_request(db: Session, friend_request: friend.FriendRequestCreat
     ).first()
     
     if existing_friendship:
-        raise HTTPException(status_code=400, detail="Already friends")
+        raise HTTPException(status_code=400, detail="此用戶已經是您的好友")
     
     # 檢查是否已經有未處理的好友請求
     existing_request = db.query(models.FriendRequest).filter(
@@ -253,7 +253,11 @@ def create_friend_request(db: Session, friend_request: friend.FriendRequestCreat
     ).first()
     
     if existing_request:
-        raise HTTPException(status_code=400, detail="Friend request already exists")
+        # 檢查請求的方向
+        if existing_request.user_id_1 == user_id:
+            raise HTTPException(status_code=400, detail="您已經發送過好友請求給此用戶")
+        else:
+            raise HTTPException(status_code=400, detail="此用戶已經發送好友請求給您，請查看待處理的請求")
     
     # 創建好友請求
     new_request = models.FriendRequest(
