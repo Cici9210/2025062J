@@ -1,59 +1,57 @@
 
 //應用主題 (theme.dart)
 //功能: 定義應用程式的視覺主題
-//相依: Flutter SDK
+//相依: Flutter SDK, ui_constants
 
 import 'package:flutter/material.dart';
+import 'ui_constants.dart';
 
 class AppTheme {
-  // 定義主要顏色
-  static const primaryColor = Color(0xFFFF6B6B);
-  static const secondaryColor = Color(0xFFFF9A8B);
-  static const darkPrimaryColor = Color(0xFFE53935);
-  static const darkSecondaryColor = Color(0xFFFF7043);
-  
-  // 淺色主題
+  // 使用 UI 常數中的顏色定義
+  static const primaryColor = UIConstants.primaryColor;
+  static const secondaryColor = UIConstants.secondaryColor;
+  static const darkPrimaryColor = UIConstants.primaryVariant;
+  static const darkSecondaryColor = UIConstants.secondaryVariant;
+    // 淺色主題 (從Figma設計提取)
   static final ThemeData lightTheme = ThemeData(
     primaryColor: primaryColor,
     scaffoldBackgroundColor: Colors.white,
-    colorScheme: const ColorScheme.light(
+    colorScheme: ColorScheme.light(
       primary: primaryColor,
       secondary: secondaryColor,
+      tertiary: UIConstants.accentColor,
     ),
-    appBarTheme: const AppBarTheme(
+    fontFamily: 'Noto Sans TC', // 使用Noto Sans TC字體
+    appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
       elevation: 0,
+      centerTitle: true,
+      titleTextStyle: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+      ),
+      iconTheme: const IconThemeData(size: 24),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      ),
+      style: UIConstants.primaryButtonStyle,
     ),
-    inputDecorationTheme: InputDecorationTheme(
+    textButtonTheme: TextButtonThemeData(
+      style: UIConstants.textButtonStyle,
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: UIConstants.secondaryButtonStyle,
+    ),    inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.grey[100],
+      fillColor: Colors.grey.shade50,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(UIConstants.radiusM),
+        borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: primaryColor),
-      ),
-    ),
-    textTheme: const TextTheme(
-      headlineMedium: TextStyle(
-        color: Colors.black87,
-        fontWeight: FontWeight.bold,
-      ),
-      bodyLarge: TextStyle(
-        color: Colors.black87,
       ),
     ),
   );
@@ -62,7 +60,7 @@ class AppTheme {
   static final ThemeData darkTheme = ThemeData(
     primaryColor: darkPrimaryColor,
     scaffoldBackgroundColor: const Color(0xFF121212),
-    colorScheme: const ColorScheme.dark(
+    colorScheme: ColorScheme.dark(
       primary: darkPrimaryColor,
       secondary: darkSecondaryColor,
     ),
@@ -70,36 +68,33 @@ class AppTheme {
       backgroundColor: Color(0xFF1F1F1F),
       foregroundColor: Colors.white,
       elevation: 0,
+      centerTitle: true,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: darkPrimaryColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(8),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: darkSecondaryColor,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: const Color(0xFF2C2C2C),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: const BorderSide(color: darkPrimaryColor),
-      ),
-    ),
-    textTheme: const TextTheme(
-      headlineMedium: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-      bodyLarge: TextStyle(
-        color: Colors.white70,
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: darkPrimaryColor),
       ),
     ),
   );

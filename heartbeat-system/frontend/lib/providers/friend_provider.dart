@@ -19,21 +19,26 @@ class FriendProvider with ChangeNotifier {
   List<FriendRequest> get pendingRequests => _pendingRequests;
   bool get isLoading => _isLoading;
   bool get hasPendingRequests => _pendingRequests.isNotEmpty;
-  
-  // 載入好友列表
+    // 載入好友列表
   Future<void> loadFriends(String token) async {
-    _isLoading = true;
-    notifyListeners();
-    
-    try {
-      _friends = await _friendService.getFriends(token);
-      _pendingRequests = await _friendService.getPendingRequests(token);
-      _isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      rethrow;
+    if (!_isLoading) {
+      _isLoading = true;
+      // 確保不是在構建期間調用 notifyListeners
+      Future.microtask(() => notifyListeners());
+      
+      try {
+        final friends = await _friendService.getFriends(token);
+        final requests = await _friendService.getPendingRequests(token);
+        
+        _friends = friends;
+        _pendingRequests = requests;
+        _isLoading = false;
+        notifyListeners();
+      } catch (e) {
+        _isLoading = false;
+        notifyListeners();
+        rethrow;
+      }
     }
   }
   

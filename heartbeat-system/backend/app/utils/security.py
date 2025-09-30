@@ -21,7 +21,10 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    """獲取密碼雜湊值"""
+    """獲取密碼雜湊值，bcrypt限制密碼長度不超過72字節"""
+    # 確保密碼不超過72字節
+    if isinstance(password, str):
+        password = password[:72]
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../models/device.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/device_service.dart';
+import '../../config/ui_constants.dart';
 
 class BindDeviceScreen extends StatefulWidget {
   const BindDeviceScreen({Key? key}) : super(key: key);
@@ -42,7 +43,11 @@ class _BindDeviceScreenState extends State<BindDeviceScreen> {
           );
           
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('裝置綁定成功')),
+            SnackBar(
+              content: Text('裝置綁定成功'),
+              backgroundColor: UIConstants.successColor,
+              behavior: SnackBarBehavior.floating,
+            ),
           );
           
           // 回到前一頁
@@ -50,7 +55,11 @@ class _BindDeviceScreenState extends State<BindDeviceScreen> {
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('裝置綁定失敗: $e')),
+          SnackBar(
+            content: Text('裝置綁定失敗: $e'),
+            backgroundColor: UIConstants.errorColor,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       } finally {
         setState(() {
@@ -59,111 +68,296 @@ class _BindDeviceScreenState extends State<BindDeviceScreen> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('綁定裝置'),
+        title: const Text(
+          '綁定裝置',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            letterSpacing: 0.5,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        foregroundColor: UIConstants.textLight,
+        elevation: 0,
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFFF9A8B), Color(0xFFFF6B6B)],
+            colors: UIConstants.backgroundGradient,
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // 說明卡片
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Icon(
+          child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: UIConstants.spaceL),
+            children: [
+              SizedBox(height: UIConstants.spaceXL),
+              // 標題文字
+              Text(
+                '將您的心臟裝置綁定至帳號',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: UIConstants.spaceM),
+              Text(
+                '綁定裝置後，您可以開始使用心臟互動功能',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withOpacity(0.9),
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: UIConstants.spaceXXL),
+              
+              // 說明卡片
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(UIConstants.spaceL),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [UIConstants.secondaryColor, UIConstants.primaryColor],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: UIConstants.primaryColor.withOpacity(0.3),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
                           Icons.info_outline,
                           size: 40,
-                          color: Theme.of(context).primaryColor,
+                          color: Colors.white,
                         ),
-                        SizedBox(height: 16),
+                      ),
+                      SizedBox(height: UIConstants.spaceL),
+                      Text(
+                        '如何綁定裝置？',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: UIConstants.textDark,
+                        ),
+                      ),
+                      SizedBox(height: UIConstants.spaceM),
+                      Text(
+                        '請輸入您的裝置ID，裝置ID通常印在裝置背面或包裝上。'
+                        '您也可以在裝置開機時，通過序列埠監視器查看輸出的裝置ID。',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: UIConstants.textMedium,
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: UIConstants.spaceL),
+                      Container(
+                        padding: EdgeInsets.all(UIConstants.spaceM),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(UIConstants.radiusM),
+                          border: Border.all(
+                            color: Colors.blue.shade200,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.lightbulb,
+                              color: Colors.blue.shade700,
+                              size: 24,
+                            ),
+                            SizedBox(width: UIConstants.spaceM),
+                            Expanded(
+                              child: Text(
+                                '裝置ID格式為: ESP32_HEART_XXX，其中XXX為3位數字，例如ESP32_HEART_001',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.blue.shade800,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: UIConstants.spaceXL),
+                // 綁定表單
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(UIConstants.spaceL),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                         Text(
-                          '如何綁定裝置？',
+                          '輸入裝置ID',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: UIConstants.textDark,
                           ),
                         ),
-                        SizedBox(height: 8),
-                        Text(
-                          '請輸入您的裝置ID，裝置ID通常印在裝置背面或包裝上。'
-                          '您也可以在裝置開機時，通過序列埠監視器查看輸出的裝置ID。',
-                          textAlign: TextAlign.center,
+                        SizedBox(height: UIConstants.spaceM),
+                        TextFormField(
+                          controller: _deviceUidController,
+                          decoration: UIConstants.inputDecoration(
+                            '裝置ID',
+                            prefixIcon: Icons.devices,
+                          ).copyWith(
+                            hintText: '例如: ESP32_HEART_001',
+                            prefixIcon: Container(
+                              padding: EdgeInsets.all(UIConstants.spaceS),
+                              child: Icon(
+                                Icons.devices,
+                                color: UIConstants.primaryColor,
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                                width: 1,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                              borderSide: BorderSide(
+                                color: UIConstants.primaryColor,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return '請輸入裝置ID';
+                            }
+                            final regex = RegExp(r'^ESP32_HEART_\d{3}$');
+                            if (!regex.hasMatch(value)) {
+                              return '請輸入有效的裝置ID格式 (ESP32_HEART_XXX)';
+                            }
+                            return null;
+                          },
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: UIConstants.textDark,
+                          ),
+                        ),
+                        SizedBox(height: UIConstants.spaceXL),
+                        ElevatedButton(
+                          onPressed: _isLoading ? null : _bindDevice,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: UIConstants.primaryColor,
+                            foregroundColor: Colors.white,
+                            elevation: 8,
+                            shadowColor: UIConstants.primaryColor.withOpacity(0.4),
+                            padding: EdgeInsets.symmetric(
+                              vertical: UIConstants.spaceL,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                            ),
+                            textStyle: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          child: _isLoading
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2.0,
+                                      ),
+                                    ),
+                                    SizedBox(width: UIConstants.spaceM),
+                                    Text('處理中...'),
+                                  ],
+                                )
+                              : Text('綁定裝置'),
+                        ),
+                        SizedBox(height: UIConstants.spaceM),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: UIConstants.textMedium,
+                          ),
+                          child: Text(
+                            '取消',
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 24),
-                
-                // 綁定表單
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          TextFormField(
-                            controller: _deviceUidController,
-                            decoration: InputDecoration(
-                              labelText: '裝置ID',
-                              hintText: '例如: ESP32_HEART_001',
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.devices),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '請輸入裝置ID';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: _isLoading ? null : _bindDevice,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12.0),
-                              child: _isLoading
-                                  ? CircularProgressIndicator(color: Colors.white)
-                                  : Text('綁定裝置', style: TextStyle(fontSize: 16)),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              SizedBox(height: UIConstants.spaceXL),
+            ],
           ),
         ),
       ),

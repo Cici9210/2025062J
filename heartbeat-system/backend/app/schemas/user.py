@@ -22,6 +22,14 @@ class User(UserBase):
         orm_mode = True
 
 
+class UserInDB(User):
+    """資料庫中的使用者資料結構，包含密碼雜湊"""
+    password_hash: str
+    
+    class Config:
+        orm_mode = True
+
+
 class UserWithStatus(User):
     """帶狀態的使用者資料結構，用於好友列表"""
     online: bool = False

@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../config/ui_constants.dart';
 import '../../models/device.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/friend_provider.dart';
@@ -61,34 +62,49 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('我的心臟'),
-        actions: [          // 好友按鈕
+        title: const Text(
+          '我的心臟',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            letterSpacing: 0.5,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        foregroundColor: UIConstants.textLight,
+        elevation: 0,
+        actions: [
+          // 好友按鈕
           IconButton(
             icon: Consumer<FriendProvider>(
               builder: (context, friendProvider, child) {
                 return Stack(
                   children: [
-                    const Icon(Icons.people),
+                    const Icon(Icons.people, size: 26),
                     if (friendProvider.hasPendingRequests)
                       Positioned(
                         right: 0,
                         top: 0,
                         child: Container(
-                          padding: const EdgeInsets.all(1),
+                          padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(6),
+                            color: UIConstants.heartColor,
+                            borderRadius: BorderRadius.circular(UIConstants.radiusS),
+                            border: Border.all(color: Colors.white, width: 1),
+                            boxShadow: UIConstants.shadowSmall,
                           ),
                           constraints: const BoxConstraints(
-                            minWidth: 12,
-                            minHeight: 12,
+                            minWidth: 16,
+                            minHeight: 16,
                           ),
                           child: Text(
                             '${friendProvider.pendingRequests.length}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 8,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -104,24 +120,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (context) => const FriendListScreen()),
               );
             },
+            tooltip: '查看好友',
           ),
           // 登出按鈕
           IconButton(
-            icon: const Icon(Icons.exit_to_app),
+            icon: const Icon(Icons.exit_to_app, size: 26),
             onPressed: _logout,
+            tooltip: '登出',
           ),
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFFF9A8B), Color(0xFFFF6B6B)],
+            colors: UIConstants.backgroundGradient,
           ),
         ),
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                    SizedBox(height: UIConstants.spaceM),
+                    const Text(
+                      '載入裝置中...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              )
             : _devices.isEmpty
                 ? _buildEmptyState()
                 : _buildDeviceList(),
@@ -133,110 +170,325 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(builder: (context) => BindDeviceScreen()),
           ).then((_) => _loadDevices());
         },
-        child: const Icon(Icons.add),
+        backgroundColor: UIConstants.primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 6,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(UIConstants.radiusL),
+        ),
+        child: const Icon(Icons.add, size: 28),
         tooltip: '綁定新裝置',
       ),
     );
   }
-  
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    Widget _buildEmptyState() {
+    return RefreshIndicator(
+      onRefresh: _loadDevices,
+      color: UIConstants.primaryColor,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          const Icon(
-            Icons.heart_broken,
-            size: 80,
-            color: Colors.white,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            '還沒有綁定裝置',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '點擊右下角按鈕綁定您的壓感互動裝置',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BindDeviceScreen()),
-              ).then((_) => _loadDevices());
-            },
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Text('綁定裝置'),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Theme.of(context).primaryColor,
+          Container(
+            height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 100,
+            child: Center(
+              child: Container(
+                margin: EdgeInsets.all(UIConstants.spaceXL),
+                padding: EdgeInsets.all(UIConstants.spaceXL),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(UIConstants.spaceXL),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: UIConstants.heartColor.withOpacity(0.3),
+                            blurRadius: 20,
+                            spreadRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.heart_broken,
+                        size: 80,
+                        color: UIConstants.heartColor,
+                      ),
+                    ),
+                    SizedBox(height: UIConstants.spaceL),
+                    Text(
+                      '還沒有綁定裝置',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    SizedBox(height: UIConstants.spaceM),
+                    Text(
+                      '點擊右下角按鈕綁定您的壓感互動裝置',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.9),
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: UIConstants.spaceXL),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => BindDeviceScreen()),
+                        ).then((_) => _loadDevices());
+                      },
+                      icon: Icon(Icons.add),
+                      label: Text(
+                        '綁定裝置',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: UIConstants.primaryColor,
+                        elevation: 8,
+                        shadowColor: UIConstants.primaryColor.withOpacity(0.4),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: UIConstants.spaceXL, 
+                          vertical: UIConstants.spaceM,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
-  
-  Widget _buildDeviceList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _devices.length,
-      itemBuilder: (context, index) {
-        final device = _devices[index];
-        return Card(
-          elevation: 4,
-          margin: const EdgeInsets.only(bottom: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            title: Text(
-              '裝置 ${device.deviceUid}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+    Widget _buildDeviceList() {
+    return RefreshIndicator(
+      onRefresh: _loadDevices,
+      color: UIConstants.primaryColor,
+      child: ListView(
+        padding: EdgeInsets.only(
+          left: UIConstants.spaceL,
+          right: UIConstants.spaceL,
+          top: AppBar().preferredSize.height + MediaQuery.of(context).padding.top + 16,
+          bottom: UIConstants.spaceL,
+        ),
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          // 裝置列表標題
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: UIConstants.spaceM,
+              vertical: UIConstants.spaceM,
             ),
-            subtitle: Text('ID: ${device.id}'),
-            trailing: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HeartInteractionScreen(device: device),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '我的裝置',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
-                );
-              },
-              child: const Text('開始互動'),
-            ),
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.favorite,
-                color: Colors.white,
-              ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: UIConstants.spaceM,
+                    vertical: UIConstants.spaceXS,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                  ),
+                  child: Text(
+                    '${_devices.length}個',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        );
-      },
+          SizedBox(height: UIConstants.spaceM),
+          ..._devices.map((device) => _buildDeviceCard(device)).toList(),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildDeviceCard(Device device) {
+    return Container(
+      margin: EdgeInsets.only(bottom: UIConstants.spaceL),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 0,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Card(
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+        ),
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(UIConstants.spaceL),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [UIConstants.primaryColor, UIConstants.secondaryColor],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: UIConstants.primaryColor.withOpacity(0.4),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.favorite,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                  ),
+                  SizedBox(width: UIConstants.spaceL),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '裝置 ${device.deviceUid}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: UIConstants.textDark,
+                          ),
+                        ),
+                        SizedBox(height: UIConstants.spaceS),
+                        Text(
+                          'ID: ${device.id}',
+                          style: TextStyle(
+                            color: UIConstants.textMedium,
+                            fontSize: 14,
+                          ),
+                        ),
+                        SizedBox(height: UIConstants.spaceS),
+                        Row(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: UIConstants.successColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            SizedBox(width: UIConstants.spaceXS),
+                            Text(
+                              '已連接',
+                              style: TextStyle(
+                                color: UIConstants.successColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: UIConstants.spaceM),
+              // 操作按鈕
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HeartInteractionScreen(device: device),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.favorite_border),
+                      label: Text('開始互動'),
+                      style: UIConstants.primaryButtonStyle,
+                    ),
+                  ),
+                  SizedBox(width: UIConstants.spaceM),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(UIConstants.radiusM),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        // 未來可以添加裝置詳情或設定功能
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('裝置設定功能即將推出')),
+                        );
+                      },
+                      icon: Icon(Icons.settings, color: UIConstants.textMedium),
+                      tooltip: '裝置設定',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

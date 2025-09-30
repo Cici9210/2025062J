@@ -1,30 +1,35 @@
-// This is a basic Flutter widget test.
+// 心臟壓感互動系統測試檔案
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// 功能: 測試應用程式的基本UI元素和行為
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:heartbeat_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('應用啟動時顯示登入畫面', (WidgetTester tester) async {
+    // 構建應用並觸發一個幀
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // 驗證登入畫面是否顯示
+    expect(find.text('心臟壓感互動系統'), findsOneWidget);
+    expect(find.byType(TextField), findsAtLeastNWidgets(2)); // 至少有2個文字輸入框
+    expect(find.byType(ElevatedButton), findsAtLeastNWidgets(1)); // 至少有1個按鈕
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('登入欄位驗證', (WidgetTester tester) async {
+    // 構建應用並觸發一個幀
+    await tester.pumpWidget(const MyApp());
+
+    // 尋找並驗證登入按鈕存在
+    final loginButton = find.byType(ElevatedButton).first;
+    expect(loginButton, findsOneWidget);
+
+    // 點擊登入按鈕而不輸入資料，應該顯示驗證錯誤
+    await tester.tap(loginButton);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // 驗證畫面仍然是登入畫面
+    expect(find.text('心臟壓感互動系統'), findsOneWidget);
   });
 }

@@ -3,7 +3,7 @@
 // 相依: 無
 
 class AppConfig {
-  // API 基礎 URL
+  // API 基礎 URL - 使用 localhost 以避免在某些瀏覽器中的跨域問題
   static const String apiBaseUrl = 'http://localhost:8000';
   
   // WebSocket 基礎 URL
