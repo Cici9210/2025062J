@@ -9,8 +9,9 @@ import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/interaction_provider.dart';
 import 'providers/friend_provider.dart';
+import 'providers/message_provider.dart';
 import 'screens/auth/login_screen.dart';
-import 'screens/home/home_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,8 +27,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => InteractionProvider()),
         ChangeNotifierProvider(create: (_) => FriendProvider()),
-      ],
-      child: MaterialApp(
+        ChangeNotifierProvider(create: (_) => MessageProvider()),
+      ],      child: MaterialApp(
         title: '心臟壓感互動系統',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         home: Consumer<AuthProvider>(
           builder: (context, authProvider, _) {
             return authProvider.isAuthenticated 
-                ? const HomeScreen() 
+                ? const MainScreen() 
                 : const LoginScreen();
           },
         ),

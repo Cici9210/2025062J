@@ -18,6 +18,7 @@ class WebSocketService {
   // 回調函數
   MessageCallback? _onHeartbeatReceived;
   MessageCallback? _onPressureReceived;
+  MessageCallback? _onMessageReceived;
 
   // 檢查連接狀態
   bool get isConnected => _connected;
@@ -36,11 +37,13 @@ class WebSocketService {
         final data = jsonDecode(message);
         final messageType = data['type'];
         
-        // 根據訊息類型調用相應回調
+      // 根據訊息類型調用相應回調
         if (messageType == 'paired_heartbeat' && _onHeartbeatReceived != null) {
           _onHeartbeatReceived!(data);
         } else if (messageType == 'paired_pressure' && _onPressureReceived != null) {
           _onPressureReceived!(data);
+        } else if (messageType == 'new_message' && _onMessageReceived != null) {
+          _onMessageReceived!(data);
         }
       },
       onDone: () {
@@ -80,10 +83,14 @@ class WebSocketService {
   void onHeartbeatReceived(MessageCallback callback) {
     _onHeartbeatReceived = callback;
   }
-  
-  // 設置壓力數據接收回調
+    // 設置壓力數據接收回調
   void onPressureReceived(MessageCallback callback) {
     _onPressureReceived = callback;
+  }
+  
+  // 設置新訊息接收回調
+  void onMessageReceived(MessageCallback callback) {
+    _onMessageReceived = callback;
   }
   
   // 關閉WebSocket連接

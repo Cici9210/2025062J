@@ -34,12 +34,27 @@ def create_user(db: Session, user: auth.UserCreate):
 
 def authenticate_user(db: Session, email: str, password: str):
     """驗證使用者"""
-    user = get_user_by_email(db, email)
-    if not user:
+    try:
+        user = get_user_by_email(db, email)
+        if not user:
+            print(f"用戶不存在: {email}")
+            return False
+        
+        print(f"驗證用戶: {email}")
+        print(f"密碼長度: {len(password)}")
+        print(f"密碼哈希值長度: {len(user.password_hash) if user.password_hash else 0}")
+        
+        if not verify_password(password, user.password_hash):
+            print("密碼驗證失敗")
+            return False
+            
+        print("密碼驗證成功")
+        return user
+    except Exception as e:
+        print(f"身份驗證過程中出現錯誤: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
-    if not verify_password(password, user.password_hash):
-        return False
-    return user
 
 
 def get_current_user(db: Session = Depends(connection.get_db), token: str = Depends(oauth2_scheme)):

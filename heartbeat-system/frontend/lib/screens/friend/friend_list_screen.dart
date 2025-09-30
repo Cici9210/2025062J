@@ -46,11 +46,9 @@ class _FriendListScreenState extends State<FriendListScreen> {
         }
       }
     }
-  }
-    @override
+  }    @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
           '我的好友',

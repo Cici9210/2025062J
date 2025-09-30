@@ -58,11 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _logout() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.logout();
-  }
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
           '我的心臟',

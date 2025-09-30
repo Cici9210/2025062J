@@ -87,3 +87,17 @@ class FriendRequest(Base):
     user_id_2 = Column(Integer, ForeignKey("users.id"))  # 接收請求的用戶
     status = Column(String(20))  # "pending", "accepted", "rejected"
     created_at = Column(DateTime, server_default=func.now())
+
+class Message(Base):
+    """用戶間文字交流資料表"""
+    __tablename__ = "messages"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    sender_id = Column(Integer, ForeignKey("users.id"))  # 發送消息的用戶
+    receiver_id = Column(Integer, ForeignKey("users.id"))  # 接收消息的用戶
+    content = Column(String(1024))  # 消息内容
+    created_at = Column(DateTime, server_default=func.now())
+    
+    # 關聯
+    sender = relationship("User", foreign_keys=[sender_id])
+    receiver = relationship("User", foreign_keys=[receiver_id])

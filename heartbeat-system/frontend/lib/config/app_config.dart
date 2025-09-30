@@ -3,11 +3,11 @@
 // 相依: 無
 
 class AppConfig {
-  // API 基礎 URL - 使用 localhost 以避免在某些瀏覽器中的跨域問題
-  static const String apiBaseUrl = 'http://localhost:8000';
+  // API 基礎 URL - 使用相對路徑避免跨域問題
+  static const String apiBaseUrl = '';
   
   // WebSocket 基礎 URL
-  static const String wsBaseUrl = 'ws://localhost:8000';
+  static const String wsBaseUrl = 'ws://127.0.0.1:8000';
   
   // 心跳更新間隔 (毫秒)
   static const int heartbeatInterval = 1000;
