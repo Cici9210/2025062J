@@ -37,7 +37,26 @@ def bind_device(db: Session, device_uid: str, user_id: int):
 def get_user_devices(db: Session, user_id: int):
     """獲取用戶所有裝置"""
     devices = db.query(models.Device).filter(models.Device.user_id == user_id).all()
-    return devices
+    
+    # 轉換為schema回應並添加連接狀態
+    from ..schemas.device import Device
+    from ..main import connection_manager
+    
+    result = []
+    for device in devices:
+        # 檢查設備是否實際連接
+        is_connected = connection_manager.is_device_connected(device.device_uid)
+        
+        # 創建設備數據對象
+        device_data = Device(
+            id=device.id,
+            device_uid=device.device_uid,
+            user_id=device.user_id,
+            is_connected=is_connected  # 添加實際連接狀態
+        )
+        result.append(device_data)
+    
+    return result
 
 
 def get_device_status(db: Session, device_id: int, user_id: int):
@@ -51,13 +70,16 @@ def get_device_status(db: Session, device_id: int, user_id: int):
     if not db_device:
         raise HTTPException(status_code=404, detail="Device not found or not owned by user")
     
+    # 從WebSocket連接管理器中獲取設備連接狀態
+    from ..main import connection_manager
+    is_online = connection_manager.is_device_connected(db_device.device_uid)
+    
     # 獲取最新的心跳日誌
     latest_log = db.query(models.HeartbeatLog).filter(
         models.HeartbeatLog.device_id == device_id
     ).order_by(models.HeartbeatLog.logged_at.desc()).first()
     
-    # 判斷裝置是否在線 (最近15秒內有心跳)
-    is_online = False
+    # 獲取心跳數據
     last_heartbeat = None
     last_bpm = None
     last_temperature = None
@@ -66,10 +88,6 @@ def get_device_status(db: Session, device_id: int, user_id: int):
         last_heartbeat = latest_log.logged_at
         last_bpm = latest_log.bpm
         last_temperature = latest_log.temperature
-        
-        # 判斷是否在線 (最近15秒內有心跳)
-        time_diff = (datetime.now() - last_heartbeat).total_seconds()
-        is_online = time_diff < 15
     
     return device.DeviceStatus(
         id=db_device.id,
@@ -207,29 +225,39 @@ def get_friends(db: Session, user_id: int):
 
 def get_pending_requests(db: Session, user_id: int):
     """獲取待處理的好友請求"""
-    # 查詢發送給當前用戶的待處理好友請求
-    pending_requests = db.query(models.FriendRequest).filter(
-        models.FriendRequest.user_id_2 == user_id,
-        models.FriendRequest.status == "pending"
-    ).all()
-    
-    # 查詢發送請求用戶的信息
-    result = []
-    for request in pending_requests:
-        # 獲取請求發送者的信息
-        from_user = db.query(models.User).filter(models.User.id == request.user_id_1).first()
+    try:
+        # 查詢發送給當前用戶的待處理好友請求
+        pending_requests = db.query(models.FriendRequest).filter(
+            models.FriendRequest.user_id_2 == user_id,
+            models.FriendRequest.status == "pending"
+        ).all()
         
-        request_with_user = friend.FriendRequest(
-            id=request.id,
-            user_id_1=request.user_id_1,
-            user_id_2=request.user_id_2,
-            status=request.status,
-            created_at=request.created_at,
-            from_user_email=from_user.email if from_user else None
-        )
-        result.append(request_with_user)
-    
-    return result
+        # 查詢發送請求用戶的信息
+        result = []
+        for request in pending_requests:
+            try:
+                # 獲取請求發送者的信息
+                from_user = db.query(models.User).filter(models.User.id == request.user_id_1).first()
+                
+                request_with_user = friend.FriendRequest(
+                    id=request.id,
+                    user_id_1=request.user_id_1,
+                    user_id_2=request.user_id_2,
+                    status=request.status,
+                    created_at=request.created_at,
+                    from_user_email=from_user.email if from_user else None
+                )
+                result.append(request_with_user)
+            except Exception as e:
+                # 記錄特定請求處理中的錯誤，但繼續處理其他請求
+                print(f"處理好友請求ID {request.id} 時出錯: {e}")
+                continue
+        
+        return result
+    except Exception as e:
+        print(f"獲取待處理好友請求時發生錯誤: {e}")
+        # 返回空列表而不是拋出錯誤，使API能夠正常響應
+        return []
 
 def create_friend_request(db: Session, friend_request: friend.FriendRequestCreate, user_id: int):
     """創建好友請求"""

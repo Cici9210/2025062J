@@ -23,7 +23,7 @@ class FriendRequest(FriendRequestBase):
     from_user_email: Optional[str] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class FriendRequestCreate(FriendRequestBase):
@@ -37,4 +37,4 @@ class FriendRequestResponse(BaseModel):
     status: str
     
     class Config:
-        orm_mode = True
+        from_attributes = True

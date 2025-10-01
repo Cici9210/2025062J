@@ -22,9 +22,10 @@ class Device(DeviceBase):
     """裝置完整資料結構"""
     id: int
     user_id: int
+    is_connected: bool = False  # 添加連接狀態字段
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # 更新為新的Pydantic V2命名
 
 
 class DeviceStatus(BaseModel):
@@ -37,4 +38,4 @@ class DeviceStatus(BaseModel):
     last_temperature: Optional[float] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # 更新為新的Pydantic V2命名

@@ -13,18 +13,24 @@ class DeviceService {
   
   // 獲取用戶裝置列表
   Future<List<Device>> getUserDevices(String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/devices'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    
-    if (response.statusCode == 200) {
-      List<dynamic> devicesJson = jsonDecode(response.body);
-      return devicesJson.map((json) => Device.fromJson(json)).toList();
-    } else {
-      throw Exception('獲取裝置列表失敗: ${response.body}');
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/devices'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        print('裝置數據：${response.body}');
+        List<dynamic> devicesJson = jsonDecode(response.body);
+        return devicesJson.map((json) => Device.fromJson(json)).toList();
+      } else {
+        throw Exception('獲取裝置列表失敗: ${response.body}');
+      }
+    } catch (e) {
+      print('獲取裝置列表錯誤: $e');
+      throw Exception('獲取裝置列表失敗: $e');
     }
   }
   

@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from .database import models, connection
-from .schemas import auth, user, device, interaction, friend
-from .services import auth_service, device_service, websocket_service
+from .schemas import auth, user, device, interaction, friend, message
+from .services import auth_service, device_service, websocket_service, message_service
 from .utils import security
 
 # 初始化資料庫
@@ -97,6 +97,12 @@ def get_device_status(device_id: int, db: Session = Depends(get_db),
                       current_user: models.User = Depends(auth_service.get_current_user)):
     return device_service.get_device_status(db=db, device_id=device_id, user_id=current_user.id)
 
+@app.get("/api/devices/connection/{device_uid}")
+def get_device_connection_status(device_uid: str):
+    """獲取設備的實時連接狀態（僅用於測試）"""
+    is_connected = connection_manager.is_device_connected(device_uid)
+    return {"device_uid": device_uid, "is_connected": is_connected}
+
 # 互動相關端點
 @app.post("/api/interactions/record", response_model=interaction.Interaction)
 def record_interaction(interaction_data: interaction.InteractionCreate, db: Session = Depends(get_db),
@@ -108,14 +114,23 @@ connection_manager = websocket_service.ConnectionManager()
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str, db: Session = Depends(get_db)):
+    # 連接WebSocket
     await connection_manager.connect(websocket, client_id)
+    print(f"WebSocket連接已建立：{client_id}")
+    
     try:
         while True:
             data = await websocket.receive_json()
             # 處理接收到的資料
             await connection_manager.process_message(client_id, data, db)
     except WebSocketDisconnect:
+        # 斷開連接
         connection_manager.disconnect(client_id)
+        print(f"WebSocket連接已斷開：{client_id}")
+    except Exception as e:
+        # 處理其他異常
+        connection_manager.disconnect(client_id)
+        print(f"WebSocket錯誤：{e}")
 
 # 配對相關端點
 @app.post("/api/pairing/request", response_model=interaction.PairingResponse)
@@ -164,6 +179,33 @@ def remove_friend(friend_id: int, db: Session = Depends(get_db),
     """移除好友"""
     device_service.remove_friend(db=db, friend_id=friend_id, user_id=current_user.id)
     return {"status": "success"}
+
+# 訊息相關端點
+# 使用明確的路由處理，將對話列表端點移至完全獨立的路徑
+@app.get("/api/message-conversations")  # 新的主要路徑
+def get_conversations_new(db: Session = Depends(get_db),
+                     current_user: models.User = Depends(auth_service.get_current_user)):
+    """獲取當前用戶的所有對話列表 (新路徑)"""
+    return message_service.get_conversations(db=db, user_id=current_user.id)
+    
+# 保留舊路徑一段時間以實現向後相容性
+@app.get("/api/messages/conversations")  
+def get_conversations_legacy(db: Session = Depends(get_db),
+                     current_user: models.User = Depends(auth_service.get_current_user)):
+    """獲取當前用戶的所有對話列表 (舊路徑，為向後相容保留)"""
+    return message_service.get_conversations(db=db, user_id=current_user.id)
+
+@app.post("/api/messages/send", response_model=message.Message)
+def send_message(message_data: message.MessageCreate, db: Session = Depends(get_db),
+                current_user: models.User = Depends(auth_service.get_current_user)):
+    """發送消息給指定用戶"""
+    return message_service.create_message(db=db, sender_id=current_user.id, message_data=message_data)
+
+@app.get("/api/messages/user/{other_user_id}", response_model=List[message.Message])
+def get_messages(other_user_id: int, db: Session = Depends(get_db),
+                current_user: models.User = Depends(auth_service.get_current_user)):
+    """獲取與指定用戶之間的所有消息"""
+    return message_service.get_messages_between_users(db=db, user_id=current_user.id, other_user_id=other_user_id)
 
 # 健康檢查端點
 @app.get("/health")

@@ -25,7 +25,7 @@ class Interaction(InteractionBase):
     timestamp: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class PairingRequest(BaseModel):
@@ -40,4 +40,4 @@ class PairingResponse(BaseModel):
     target_user_id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -19,7 +19,7 @@ class User(UserBase):
     created_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserInDB(User):
@@ -27,7 +27,7 @@ class UserInDB(User):
     password_hash: str
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserWithStatus(User):
@@ -36,4 +36,4 @@ class UserWithStatus(User):
     last_active: Optional[datetime] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True

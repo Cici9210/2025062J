@@ -6,11 +6,13 @@ class Device {
   final int id;
   final String deviceUid;
   final int userId;
+  final bool isConnected;  // 添加連接狀態
   
   Device({
     required this.id,
     required this.deviceUid,
     required this.userId,
+    this.isConnected = false,  // 默認為未連接
   });
   
   factory Device.fromJson(Map<String, dynamic> json) {
@@ -18,6 +20,7 @@ class Device {
       id: json['id'],
       deviceUid: json['device_uid'],
       userId: json['user_id'],
+      isConnected: json['is_connected'] ?? false,  // 解析連接狀態
     );
   }
   
@@ -26,6 +29,7 @@ class Device {
       'id': id,
       'device_uid': deviceUid,
       'user_id': userId,
+      'is_connected': isConnected,
     };
   }
 }

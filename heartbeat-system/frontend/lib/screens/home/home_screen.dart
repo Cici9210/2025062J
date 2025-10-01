@@ -39,7 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       if (authProvider.token != null) {
+        // 獲取用戶裝置（現在包括連線狀態）
         final devices = await _deviceService.getUserDevices(authProvider.token!);
+        
         setState(() {
           _devices = devices;
           _isLoading = false;
@@ -58,7 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _logout() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.logout();
-  }  @override
+  }
+  
+  // 裝置連接狀態現在直接從 Device 物件獲取  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -425,15 +429,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 10,
                               height: 10,
                               decoration: BoxDecoration(
-                                color: UIConstants.successColor,
+                                // 直接使用設備模型中的連接狀態
+                                color: device.isConnected ? UIConstants.successColor : Colors.grey,
                                 shape: BoxShape.circle,
                               ),
                             ),
                             SizedBox(width: UIConstants.spaceXS),
                             Text(
-                              '已連接',
+                              // 直接使用設備模型中的連接狀態
+                              device.isConnected ? '已連接' : '離線',
                               style: TextStyle(
-                                color: UIConstants.successColor,
+                                color: device.isConnected ? UIConstants.successColor : Colors.grey,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),

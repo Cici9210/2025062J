@@ -18,16 +18,28 @@ class ConnectionManager:
         self.active_connections: Dict[str, WebSocket] = {}
         # 存儲配對關係的字典 {user_id: paired_user_id}
         self.active_pairings: Dict[str, str] = {}
+        # 存儲設備連接狀態 {device_id: is_connected}
+        self.device_connection_status: Dict[str, bool] = {}
         
     async def connect(self, websocket: WebSocket, client_id: str):
         """建立WebSocket連接"""
         await websocket.accept()
         self.active_connections[client_id] = websocket
         
+        # 如果client_id是設備ID，更新設備連接狀態
+        if client_id.startswith("ESP32_"):
+            self.device_connection_status[client_id] = True
+            print(f"設備 {client_id} 已連接")
+        
     def disconnect(self, client_id: str):
         """關閉WebSocket連接"""
         if client_id in self.active_connections:
             del self.active_connections[client_id]
+            
+        # 如果client_id是設備ID，更新設備連接狀態
+        if client_id.startswith("ESP32_"):
+            self.device_connection_status[client_id] = False
+            print(f"設備 {client_id} 已斷開連接")
             
     async def send_personal_message(self, message: str, client_id: str):
         """發送個人訊息"""
@@ -126,3 +138,7 @@ class ConnectionManager:
                 del self.active_pairings[user_id_1]
             if user_id_2 in self.active_pairings:
                 del self.active_pairings[user_id_2]
+                
+    def is_device_connected(self, device_id: str) -> bool:
+        """檢查設備是否連接"""
+        return self.device_connection_status.get(device_id, False)

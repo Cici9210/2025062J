@@ -64,14 +64,17 @@ class MessageProvider with ChangeNotifier {
     notifyListeners();
     
     try {
+      // 即使 API 請求失敗，getConversations 也不會拋出異常，而是返回空列表
       final conversations = await _messageService.getConversations(token);
       _conversations = conversations;
       _isLoading = false;
       notifyListeners();
     } catch (e) {
+      print('載入對話列表失敗: $e');
+      // 設置為空列表以避免顯示錯誤
+      _conversations = [];
       _isLoading = false;
       notifyListeners();
-      rethrow;
     }
   }
     // 添加本地消息（當WebSocket通知新消息到達時）

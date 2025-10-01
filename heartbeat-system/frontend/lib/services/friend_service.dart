@@ -47,38 +47,38 @@ class FriendService {
   
   // 獲取待處理的好友請求
   Future<List<FriendRequest>> getPendingRequests(String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/friends/requests/pending'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      },
-    );
-    
-    if (response.statusCode == 200) {
-      try {
-        final String responseBody = utf8.decode(response.bodyBytes);
-        List<dynamic> requestsJson = jsonDecode(responseBody);
-        return requestsJson.map((json) => FriendRequest.fromJson(json)).toList();
-      } catch (e) {
-        throw Exception('解析好友請求資料錯誤: $e');
-      }
-    } else {
-      String errorMessage = '獲取好友請求失敗';
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/friends/requests/pending'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
       
-      try {
-        final String responseBody = utf8.decode(response.bodyBytes);
-        final Map<String, dynamic> errorData = jsonDecode(responseBody);
-        if (errorData.containsKey('detail')) {
-          errorMessage = errorData['detail'].toString();
+      if (response.statusCode == 200) {
+        try {
+          final String responseBody = utf8.decode(response.bodyBytes);
+          List<dynamic> requestsJson = jsonDecode(responseBody);
+          return requestsJson.map((json) => FriendRequest.fromJson(json)).toList();
+        } catch (e) {
+          print('解析好友請求資料錯誤: $e');
+          // 返回空列表而不是拋出異常
+          return [];
         }
-      } catch (e) {
-        errorMessage = '獲取好友請求失敗: 伺服器錯誤';
+      } else {
+        print('獲取好友請求失敗: ${response.statusCode}');
+        // 返回空列表而不是拋出異常
+        return [];
       }
-      
-      throw Exception(errorMessage);
+    } catch (e) {
+      print('獲取好友請求時發生網絡錯誤: $e');
+      // 返回空列表而不是拋出異常
+      return [];
     }
-  }  // 添加好友
+  }
+  
+  // 添加好友
   Future<void> addFriend(String token, String email) async {
     try {
       final response = await http.post(
