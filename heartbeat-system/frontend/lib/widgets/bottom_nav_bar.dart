@@ -38,12 +38,14 @@ class BottomNavBar extends StatelessWidget {
             vertical: UIConstants.spaceS,
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,          children: [
-            _buildNavItem(0, Icons.home_outlined, Icons.home, '首頁'),
-            _buildNavItem(1, Icons.message_outlined, Icons.message, '交流', hasNotification: hasNewMessages),
-            _buildNavItem(2, Icons.favorite_outline, Icons.favorite, '收藏'),
-            _buildNavItem(3, Icons.settings_outlined, Icons.settings, '設定'),
-          ],
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(0, Icons.home_outlined, Icons.home, '首頁'),
+              _buildNavItem(1, Icons.message_outlined, Icons.message, '訊息', hasNotification: hasNewMessages),
+              _buildNavItem(2, Icons.people_outline, Icons.people, '好友'),
+              _buildNavItem(3, Icons.bar_chart_outlined, Icons.bar_chart, '統計'),
+              _buildNavItem(4, Icons.person_outline, Icons.person, '我的'),
+            ],
           ),
         ),
       ),

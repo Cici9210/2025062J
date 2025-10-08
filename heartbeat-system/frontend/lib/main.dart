@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         title: '心臟壓感互動系統',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,  // 固定使用淺色主題
         home: Consumer<AuthProvider>(
           builder: (context, authProvider, _) {
             return authProvider.isAuthenticated 

@@ -14,14 +14,38 @@ class AppTheme {
   static const darkSecondaryColor = UIConstants.secondaryVariant;
     // 淺色主題 (從Figma設計提取)
   static final ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
     primaryColor: primaryColor,
     scaffoldBackgroundColor: Colors.white,
     colorScheme: ColorScheme.light(
       primary: primaryColor,
       secondary: secondaryColor,
       tertiary: UIConstants.accentColor,
+      background: Colors.white,
+      surface: Colors.white,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      onBackground: Colors.black87,
+      onSurface: Colors.black87,
     ),
     fontFamily: 'Noto Sans TC', // 使用Noto Sans TC字體
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(color: Colors.black87),
+      displayMedium: TextStyle(color: Colors.black87),
+      displaySmall: TextStyle(color: Colors.black87),
+      headlineLarge: TextStyle(color: Colors.black87),
+      headlineMedium: TextStyle(color: Colors.black87),
+      headlineSmall: TextStyle(color: Colors.black87),
+      titleLarge: TextStyle(color: Colors.black87),
+      titleMedium: TextStyle(color: Colors.black87),
+      titleSmall: TextStyle(color: Colors.black87),
+      bodyLarge: TextStyle(color: Colors.black87),
+      bodyMedium: TextStyle(color: Colors.black87),
+      bodySmall: TextStyle(color: Colors.black87),
+      labelLarge: TextStyle(color: Colors.black87),
+      labelMedium: TextStyle(color: Colors.black87),
+      labelSmall: TextStyle(color: Colors.black87),
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
@@ -31,8 +55,9 @@ class AppTheme {
         fontSize: 18,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
+        color: Colors.white,
       ),
-      iconTheme: const IconThemeData(size: 24),
+      iconTheme: const IconThemeData(size: 24, color: Colors.white),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: UIConstants.primaryButtonStyle,

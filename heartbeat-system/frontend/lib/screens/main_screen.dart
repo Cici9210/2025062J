@@ -10,7 +10,8 @@ import '../providers/message_provider.dart';
 import 'home/home_screen.dart';
 import 'message/message_list_screen.dart';
 import 'friend/friend_list_screen.dart';
-import 'auth/settings_screen.dart';
+import 'statistics/statistics_screen.dart';
+import 'profile/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -27,7 +28,8 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const MessageListScreen(),
     const FriendListScreen(),
-    const SettingsScreen(),
+    const StatisticsScreen(),
+    const ProfileScreen(),
   ];
   
   @override

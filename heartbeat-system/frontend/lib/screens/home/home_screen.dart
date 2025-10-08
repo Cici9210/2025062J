@@ -10,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/friend_provider.dart';
 import '../../services/device_service.dart';
 import '../device/bind_device_screen.dart';
+import '../device/device_settings_screen.dart';
 import '../interaction/heart_interaction_screen.dart';
 import '../friend/friend_list_screen.dart';
 
@@ -477,11 +478,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(UIConstants.radiusM),
                     ),
                     child: IconButton(
-                      onPressed: () {
-                        // 未來可以添加裝置詳情或設定功能
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('裝置設定功能即將推出')),
+                      onPressed: () async {
+                        // 導航到裝置設定頁面
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DeviceSettingsScreen(device: device),
+                          ),
                         );
+                        // 如果有變更，重新載入裝置列表
+                        if (result == true) {
+                          _loadDevices();
+                        }
                       },
                       icon: Icon(Icons.settings, color: UIConstants.textMedium),
                       tooltip: '裝置設定',
