@@ -10,10 +10,11 @@ import '../models/friend_request.dart';
 
 class FriendService {
   final String baseUrl = AppConfig.apiBaseUrl;
-    // 獲取好友列表
+  
+  // 獲取好友列表 (使用新 API)
   Future<List<UserWithStatus>> getFriends(String token) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/friends'),
+      Uri.parse('$baseUrl/api/pairing/friends'),  // 更新為新端點
       headers: {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
@@ -24,7 +25,18 @@ class FriendService {
       try {
         final String responseBody = utf8.decode(response.bodyBytes);
         List<dynamic> friendsJson = jsonDecode(responseBody);
-        return friendsJson.map((json) => UserWithStatus.fromJson(json)).toList();
+        // 轉換新 API 格式為舊格式
+        return friendsJson.map((json) {
+          return UserWithStatus(
+            id: json['user_id'],
+            email: json['email'],
+            createdAt: DateTime.now(),  // 新 API 沒有此欄位,使用當前時間
+            online: json['is_online'] ?? false,
+            lastActive: json['last_seen'] != null 
+              ? DateTime.parse(json['last_seen']) 
+              : null,
+          );
+        }).toList();
       } catch (e) {
         throw Exception('解析好友列表資料錯誤: $e');
       }
@@ -45,11 +57,11 @@ class FriendService {
     }
   }
   
-  // 獲取待處理的好友請求
+  // 獲取待處理的好友邀請 (使用新 API)
   Future<List<FriendRequest>> getPendingRequests(String token) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/api/friends/requests/pending'),
+        Uri.parse('$baseUrl/api/pairing/invitations'),  // 更新為新端點
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',

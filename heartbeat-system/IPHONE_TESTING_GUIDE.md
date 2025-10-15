@@ -1,53 +1,37 @@
-# 在iPhone上測試心跳互動系統APP
+# 📱 在iPhone上測試心跳互動系統 - 配對聊天功能
 
-## 📱 快速開始指南
+## 🎉 新功能測試指南
 
-### 當前配置
-- **您的電腦WiFi IP**: `172.20.10.2`
-- **後端API地址**: `http://172.20.10.2:8000`
-- **前端應用地址**: `http://172.20.10.2:8080`
+### ✅ 服務狀態
+- **後端服務**: ✅ 運行中 (http://172.20.10.2:8000)
+- **前端服務**: ✅ 運行中 (http://172.20.10.2:8080)
+- **電腦 WiFi IP**: `172.20.10.2`
 
-### 步驟1: 啟動服務
+---
 
-#### 方法A: 使用批次文件（推薦）
-1. 雙擊運行 `start_services.bat`
-2. 會自動打開兩個命令視窗（後端和前端）
-3. 等待幾秒鐘直到服務完全啟動
+## 🚀 快速開始
 
-#### 方法B: 手動啟動
-在PowerShell中運行以下命令：
-
-```powershell
-# 啟動後端
-cd c:\Users\user\2J1134\heartbeat-system\backend
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-# 在另一個終端啟動前端
-cd c:\Users\user\2J1134\heartbeat-system\frontend
-python proxy.py
+### 在 iPhone Safari 打開:
+```
+http://172.20.10.2:8080
 ```
 
-### 步驟2: 確保電腦和iPhone在同一WiFi
+---
 
-- 確認iPhone連接到與電腦相同的WiFi網絡
-- WiFi名稱應該一致
+## 👥 測試帳號 (新功能專用)
 
-### 步驟3: 在iPhone上訪問應用
+### 帳號 A
+- **Email:** `tester_a@example.com`
+- **密碼:** `Test123!`
+- **User ID:** 19
 
-1. **打開Safari瀏覽器**（推薦使用Safari，而非Chrome）
+### 帳號 B
+- **Email:** `tester_b@example.com`
+- **密碼:** `Test123!`
+- **User ID:** 20
 
-2. **輸入地址**: `http://172.20.10.2:8080`
-
-3. **如果無法訪問**，請檢查：
-   - 電腦和iPhone是否在同一WiFi
-   - Windows防火牆是否允許連接（見下方故障排除）
-
-### 步驟4: 登入測試
-
-使用以下測試帳號登入：
-
-**測試用戶1:**
-- Email: `testuser_integration@example.com`
+### 舊帳號 (一般功能)
+- **Email:** `testuser_integration@example.com`
 - Password: `Test123!`
 
 **測試用戶2:**

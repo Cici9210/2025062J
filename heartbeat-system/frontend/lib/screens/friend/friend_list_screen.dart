@@ -10,6 +10,8 @@ import '../../providers/friend_provider.dart';
 import '../../widgets/friend_request_list.dart';
 import '../../config/ui_constants.dart';
 import 'friend_detail_screen.dart';
+import '../pairing/pairing_screen.dart';
+import '../chat_room/chat_room_list_screen.dart';
 
 class FriendListScreen extends StatefulWidget {
   const FriendListScreen({Key? key}) : super(key: key);
@@ -61,6 +63,33 @@ class _FriendListScreenState extends State<FriendListScreen> {
         backgroundColor: Colors.transparent,
         foregroundColor: UIConstants.textLight,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.chat_bubble),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChatRoomListScreen(),
+                ),
+              );
+            },
+            tooltip: '聊天室',
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PairingScreen(),
+            ),
+          );
+        },
+        icon: const Icon(Icons.favorite),
+        label: const Text('開始配對'),
+        backgroundColor: const Color(0xFFFF6B9D),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -246,17 +275,6 @@ class _FriendListScreenState extends State<FriendListScreen> {
             );
           },
         ),
-      ),      
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddFriendDialog,
-        backgroundColor: UIConstants.primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 6,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.radiusL),
-        ),
-        child: const Icon(Icons.person_add, size: 28),
-        tooltip: '添加好友',
       ),
     );
   }

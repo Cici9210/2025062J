@@ -13,11 +13,15 @@ from .database import models, connection
 from .schemas import auth, user, device, interaction, friend, message
 from .services import auth_service, device_service, websocket_service, message_service
 from .utils import security
+from .api import pairing as pairing_router
 
 # 初始化資料庫
 models.Base.metadata.create_all(bind=connection.engine)
 
 app = FastAPI(title="心臟壓感互動系統 API", description="壓感互動裝置後端服務")
+
+# 註冊配對路由
+app.include_router(pairing_router.router)
 
 # 配置 CORS
 app.add_middleware(
@@ -132,53 +136,64 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str, db: Session =
         connection_manager.disconnect(client_id)
         print(f"WebSocket錯誤：{e}")
 
-# 配對相關端點
-@app.post("/api/pairing/request", response_model=interaction.PairingResponse)
-def request_pairing(pairing_data: interaction.PairingRequest, db: Session = Depends(get_db),
-                   current_user: models.User = Depends(auth_service.get_current_user)):
-    return device_service.create_pairing_request(db=db, pairing=pairing_data, user_id=current_user.id)
+# ============================================
+# 舊的配對和好友端點 (已由 pairing router 取代)
+# 保留註釋以供參考,請使用新的 /api/pairing/* 端點
+# ============================================
 
-@app.post("/api/pairing/random", response_model=interaction.PairingResponse)
-def random_pairing(db: Session = Depends(get_db),
-                  current_user: models.User = Depends(auth_service.get_current_user)):
-    return device_service.create_random_pairing(db=db, user_id=current_user.id)
+# @app.post("/api/pairing/request", response_model=interaction.PairingResponse)
+# def request_pairing(pairing_data: interaction.PairingRequest, db: Session = Depends(get_db),
+#                    current_user: models.User = Depends(auth_service.get_current_user)):
+#     return device_service.create_pairing_request(db=db, pairing=pairing_data, user_id=current_user.id)
 
-# 好友相關端點
-@app.get("/api/friends", response_model=List[user.UserWithStatus])
-def get_friends(db: Session = Depends(get_db),
-               current_user: models.User = Depends(auth_service.get_current_user)):
-    return device_service.get_friends(db=db, user_id=current_user.id)
+# @app.post("/api/pairing/random", response_model=interaction.PairingResponse)
+# def random_pairing(db: Session = Depends(get_db),
+#                   current_user: models.User = Depends(auth_service.get_current_user)):
+#     return device_service.create_random_pairing(db=db, user_id=current_user.id)
 
-@app.get("/api/friends/requests/pending", response_model=List[friend.FriendRequest])
-def get_pending_requests(db: Session = Depends(get_db),
-                        current_user: models.User = Depends(auth_service.get_current_user)):
-    """獲取待處理的好友請求"""
-    return device_service.get_pending_requests(db=db, user_id=current_user.id)
+# @app.get("/api/friends", response_model=List[user.UserWithStatus])
+# def get_friends(db: Session = Depends(get_db),
+#                current_user: models.User = Depends(auth_service.get_current_user)):
+#     return device_service.get_friends(db=db, user_id=current_user.id)
 
-@app.post("/api/friends/request", response_model=friend.FriendRequestResponse)
-def create_friend_request(friend_data: friend.FriendRequestCreate, db: Session = Depends(get_db),
-                          current_user: models.User = Depends(auth_service.get_current_user)):
-    """創建好友請求"""
-    return device_service.create_friend_request(db=db, friend_request=friend_data, user_id=current_user.id)
+# @app.get("/api/friends/requests/pending", response_model=List[friend.FriendRequest])
+# def get_pending_requests(db: Session = Depends(get_db),
+#                         current_user: models.User = Depends(auth_service.get_current_user)):
+#     """獲取待處理的好友請求"""
+#     return device_service.get_pending_requests(db=db, user_id=current_user.id)
 
-@app.post("/api/friends/request/{request_id}/accept", response_model=friend.FriendRequestResponse)
-def accept_friend_request(request_id: int, db: Session = Depends(get_db),
-                          current_user: models.User = Depends(auth_service.get_current_user)):
-    """接受好友請求"""
-    return device_service.accept_friend_request(db=db, request_id=request_id, user_id=current_user.id)
+# @app.post("/api/friends/request", response_model=friend.FriendRequestResponse)
+# def create_friend_request(friend_data: friend.FriendRequestCreate, db: Session = Depends(get_db),
+#                           current_user: models.User = Depends(auth_service.get_current_user)):
+#     """創建好友請求"""
+#     return device_service.create_friend_request(db=db, friend_request=friend_data, user_id=current_user.id)
 
-@app.post("/api/friends/request/{request_id}/reject", response_model=friend.FriendRequestResponse)
-def reject_friend_request(request_id: int, db: Session = Depends(get_db),
-                          current_user: models.User = Depends(auth_service.get_current_user)):
-    """拒絕好友請求"""
-    return device_service.reject_friend_request(db=db, request_id=request_id, user_id=current_user.id)
+# @app.post("/api/friends/request/{request_id}/accept", response_model=friend.FriendRequestResponse)
+# def accept_friend_request(request_id: int, db: Session = Depends(get_db),
+#                           current_user: models.User = Depends(auth_service.get_current_user)):
+#     """接受好友請求"""
+#     return device_service.accept_friend_request(db=db, request_id=request_id, user_id=current_user.id)
 
-@app.delete("/api/friends/{friend_id}", status_code=204)
-def remove_friend(friend_id: int, db: Session = Depends(get_db),
-                  current_user: models.User = Depends(auth_service.get_current_user)):
-    """移除好友"""
-    device_service.remove_friend(db=db, friend_id=friend_id, user_id=current_user.id)
-    return {"status": "success"}
+# @app.post("/api/friends/request/{request_id}/reject", response_model=friend.FriendRequestResponse)
+# def reject_friend_request(request_id: int, db: Session = Depends(get_db),
+#                           current_user: models.User = Depends(auth_service.get_current_user)):
+#     """拒絕好友請求"""
+#     return device_service.reject_friend_request(db=db, request_id=request_id, user_id=current_user.id)
+
+# @app.delete("/api/friends/{friend_id}", status_code=204)
+# def remove_friend(friend_id: int, db: Session = Depends(get_db),
+#                   current_user: models.User = Depends(auth_service.get_current_user)):
+#     """移除好友"""
+#     device_service.remove_friend(db=db, friend_id=friend_id, user_id=current_user.id)
+#     return {"status": "success"}
+
+# ============================================
+# 新的 API 端點說明:
+# - POST /api/pairing/match - 創建配對 (取代 /api/pairing/request)
+# - GET /api/pairing/friends - 獲取好友列表 (取代 /api/friends)
+# - GET /api/pairing/invitations - 獲取好友邀請 (取代 /api/friends/requests/pending)
+# - POST /api/pairing/invitations/{id}/respond - 回應邀請 (取代 accept/reject)
+# ============================================
 
 # 訊息相關端點
 # 使用明確的路由處理，將對話列表端點移至完全獨立的路徑
