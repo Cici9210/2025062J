@@ -1,0 +1,54 @@
+# Flutter應用打包設置 (pubspec.yaml)
+# 功能: 定義Flutter應用的相依套件和資源
+# 執行方式: 在frontend目錄下執行 flutter pub get
+
+name: heartbeat_app
+description: 壓感互動裝置的Flutter客戶端
+
+# 使用flutter版本和应用版本
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI相關
+  cupertino_icons: ^1.0.5
+  flutter_animate: ^4.1.1+1
+  
+  # 狀態管理
+  provider: ^6.0.5
+  
+  # 網路請求
+  http: ^0.13.5
+  web_socket_channel: ^2.4.0
+  
+  # 儲存
+  shared_preferences: ^2.1.1
+  
+  # 其他工具
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
+
+flutter:
+  uses-material-design: true
+  
+  # 字體
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  
+  # 資源
+  # assets:
+  #   - assets/images/

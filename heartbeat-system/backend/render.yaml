@@ -1,0 +1,32 @@
+services:
+  # Backend API Service
+  - type: web
+    name: heartbeat-backend
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: heartbeat-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: ENVIRONMENT
+        value: production
+
+databases:
+  # PostgreSQL Database
+  - name: heartbeat-db
+    databaseName: heartbeat_db
+    user: heartbeat_user
+    region: singapore
+    plan: free
