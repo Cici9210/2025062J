@@ -12,21 +12,31 @@ from ..database import models
 from ..schemas import device, interaction, user, friend
 
 
-def bind_device(db: Session, device_uid: str, user_id: int):
+def bind_device(db: Session, device_uid: str, user_id: int, name: str = None):
     """綁定裝置到使用者"""
     # 檢查裝置是否已存在
     db_device = db.query(models.Device).filter(models.Device.device_uid == device_uid).first()
     
     if db_device:
-        # 如果裝置已被綁定
-        if db_device.user_id is not None:
+        # 如果裝置已被綁定到其他用戶
+        if db_device.user_id is not None and db_device.user_id != user_id:
             raise HTTPException(status_code=400, detail="Device already bound to another user")
         
-        # 更新裝置的使用者ID
+        # 更新裝置的使用者ID和名稱
         db_device.user_id = user_id
+        if name:
+            db_device.name = name
+        db_device.is_online = True
+        db_device.last_active = datetime.now()
     else:
         # 創建新裝置記錄
-        db_device = models.Device(device_uid=device_uid, user_id=user_id)
+        db_device = models.Device(
+            device_uid=device_uid,
+            user_id=user_id,
+            name=name or f"ESP32-{device_uid[-4:]}",
+            is_online=True,
+            last_active=datetime.now()
+        )
         db.add(db_device)
     
     db.commit()
@@ -369,3 +379,127 @@ def remove_friend(db: Session, friend_id: int, user_id: int):
     db.commit()
     
     return
+
+
+def update_device_online_status(db: Session, device_uid: str, is_online: bool):
+    """更新裝置在線狀態"""
+    device = db.query(models.Device).filter(models.Device.device_uid == device_uid).first()
+    if device:
+        device.is_online = is_online
+        if is_online:
+            device.last_active = datetime.now()
+        db.commit()
+        db.refresh(device)
+    return device
+
+
+def store_pressure_data(db: Session, device_uid: str, pressure: int):
+    """存儲壓力數據"""
+    from datetime import timedelta
+    
+    device = db.query(models.Device).filter(models.Device.device_uid == device_uid).first()
+    if not device:
+        # 如果裝置不存在，創建一個未綁定的裝置
+        device = models.Device(
+            device_uid=device_uid,
+            name=f"ESP32-{device_uid[-4:]}",
+            is_online=True,
+            last_active=datetime.now()
+        )
+        db.add(device)
+        db.commit()
+        db.refresh(device)
+    
+    pressure_data = models.PressureData(
+        device_id=device.id,
+        pressure_value=pressure,
+        timestamp=datetime.now()
+    )
+    
+    db.add(pressure_data)
+    db.commit()
+    db.refresh(pressure_data)
+    
+    # 更新裝置在線狀態
+    device.last_active = datetime.now()
+    device.is_online = True
+    db.commit()
+    
+    return pressure_data
+
+
+def get_recent_pressure_data(db: Session, device_id: int, minutes: int = 5):
+    """獲取最近一段時間的壓力數據"""
+    from datetime import timedelta
+    
+    recent_time = datetime.now() - timedelta(minutes=minutes)
+    
+    return db.query(models.PressureData).filter(
+        models.PressureData.device_id == device_id,
+        models.PressureData.timestamp >= recent_time
+    ).order_by(models.PressureData.timestamp).all()
+
+
+def get_friend_devices_status(db: Session, user_id: int):
+    """獲取好友的裝置狀態"""
+    # 獲取用戶的好友列表
+    friends1 = db.query(models.User).join(
+        models.Friendship, models.Friendship.user_id_2 == models.User.id
+    ).filter(models.Friendship.user_id_1 == user_id).all()
+    
+    friends2 = db.query(models.User).join(
+        models.Friendship, models.Friendship.user_id_1 == models.User.id
+    ).filter(models.Friendship.user_id_2 == user_id).all()
+    
+    friends = friends1 + friends2
+    result = []
+    
+    # 對於每個好友，獲取其裝置狀態
+    for friend in friends:
+        devices = db.query(models.Device).filter(models.Device.user_id == friend.id).all()
+        
+        for device in devices:
+            # 獲取最新的壓力數據
+            latest_data = db.query(models.PressureData).filter(
+                models.PressureData.device_id == device.id
+            ).order_by(models.PressureData.timestamp.desc()).first()
+            
+            result.append({
+                "friend_id": friend.id,
+                "friend_email": friend.email,
+                "device_id": device.id,
+                "device_uid": device.device_uid,
+                "device_name": device.name,
+                "is_online": device.is_online,
+                "last_active": device.last_active.isoformat() if device.last_active else None,
+                "latest_pressure": latest_data.pressure_value if latest_data else None,
+                "latest_timestamp": latest_data.timestamp.isoformat() if latest_data else None
+            })
+    
+    return result
+
+
+def register_device(db: Session, device_uid: str):
+    """註冊新裝置（未綁定用戶）"""
+    device = db.query(models.Device).filter(models.Device.device_uid == device_uid).first()
+    
+    if device:
+        device.is_online = True
+        device.last_active = datetime.now()
+        db.commit()
+        db.refresh(device)
+        return device
+    
+    new_device = models.Device(
+        device_uid=device_uid,
+        name=f"ESP32-{device_uid[-4:]}",
+        is_online=True,
+        last_active=datetime.now()
+    )
+    
+    db.add(new_device)
+    db.commit()
+    db.refresh(new_device)
+    
+    return new_device
+

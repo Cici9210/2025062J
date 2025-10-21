@@ -3,6 +3,7 @@
 功能: 定義 FastAPI 主應用程式、路由和WebSocket連接
 執行方式: uvicorn app.main:app --reload
 """
+import os
 from fastapi import FastAPI, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -14,19 +15,24 @@ from .schemas import auth, user, device, interaction, friend, message
 from .services import auth_service, device_service, websocket_service, message_service
 from .utils import security
 from .api import pairing as pairing_router
+from .api import device as device_router
 
 # 初始化資料庫
 models.Base.metadata.create_all(bind=connection.engine)
 
 app = FastAPI(title="心臟壓感互動系統 API", description="壓感互動裝置後端服務")
 
-# 註冊配對路由
+# 註冊路由
 app.include_router(pairing_router.router)
+app.include_router(device_router.router)
+
+# 獲取允許的來源 (支援多個來源)
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
 # 配置 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 實際部署時應限制來源
+    allow_origins=allowed_origins,  # 從環境變數讀取
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -13,6 +13,8 @@ import '../device/bind_device_screen.dart';
 import '../device/device_settings_screen.dart';
 import '../interaction/heart_interaction_screen.dart';
 import '../friend/friend_list_screen.dart';
+import '../pairing/random_pairing_screen.dart';
+import '../friend/friend_devices_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -303,6 +305,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
+          // 快速功能區
+          _buildQuickActionsCard(),
+          SizedBox(height: UIConstants.spaceL),
+          
           // 裝置列表標題
           Padding(
             padding: EdgeInsets.symmetric(
@@ -345,6 +351,124 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: UIConstants.spaceM),
           ..._devices.map((device) => _buildDeviceCard(device)).toList(),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildQuickActionsCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 0,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(UIConstants.spaceL),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.flash_on, color: UIConstants.primaryColor, size: 24),
+                SizedBox(width: UIConstants.spaceS),
+                Text(
+                  '快速功能',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: UIConstants.textDark,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: UIConstants.spaceM),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildQuickActionButton(
+                    icon: Icons.search,
+                    label: '隨機配對',
+                    color: Colors.blue,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RandomPairingScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(width: UIConstants.spaceM),
+                Expanded(
+                  child: _buildQuickActionButton(
+                    icon: Icons.devices,
+                    label: '好友裝置',
+                    color: Colors.green,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FriendDevicesScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildQuickActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(UIConstants.radiusL),
+      child: Container(
+        padding: EdgeInsets.all(UIConstants.spaceM),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(UIConstants.radiusL),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.white, size: 24),
+            ),
+            SizedBox(height: UIConstants.spaceS),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

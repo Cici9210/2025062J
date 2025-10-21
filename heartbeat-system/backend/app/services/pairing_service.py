@@ -5,10 +5,11 @@
 """
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, not_
 from typing import Optional, List
+import random
 
-from ..database.models import Pairing, ChatRoom, FriendInvitation, Friendship, User
+from ..database.models import Pairing, ChatRoom, FriendInvitation, Friendship, User, PairingQueue
 from ..schemas.pairing import PairingCreate, ChatRoomResponse
 
 
@@ -287,3 +288,131 @@ class PairingService:
         
         friends = db.query(User).filter(User.id.in_(friend_ids)).all()
         return friends
+    
+    @staticmethod
+    def join_pairing_queue(db: Session, user_id: int) -> Optional[Pairing]:
+        """
+        用戶加入配對隊列,嘗試與其他等待中的用戶配對
+        如果找到匹配,創建配對並返回;否則加入等待隊列
+        """
+        # 清理舊的隊列記錄 (超過5分鐘)
+        timeout = datetime.now() - timedelta(minutes=5)
+        db.query(PairingQueue).filter(PairingQueue.created_at < timeout).delete()
+        db.commit()
+        
+        # 檢查用戶是否已在隊列中
+        existing = db.query(PairingQueue).filter(
+            PairingQueue.user_id == user_id,
+            PairingQueue.is_active == True
+        ).first()
+        
+        if existing:
+            # 已在隊列中,嘗試配對
+            return PairingService._try_match_from_queue(db, user_id)
+        
+        # 獲取所有等待中的用戶(排除自己和已經是好友的用戶)
+        waiting_users = db.query(PairingQueue).filter(
+            PairingQueue.user_id != user_id,
+            PairingQueue.is_active == True
+        ).all()
+        
+        # 過濾掉已是好友的用戶
+        available_users = []
+        for queue_item in waiting_users:
+            if not PairingService.is_friends(db, user_id, queue_item.user_id):
+                # 檢查是否有活躍的配對
+                existing_pairing = db.query(Pairing).filter(
+                    or_(
+                        and_(Pairing.user_id_1 == user_id, Pairing.user_id_2 == queue_item.user_id),
+                        and_(Pairing.user_id_1 == queue_item.user_id, Pairing.user_id_2 == user_id)
+                    ),
+                    Pairing.status == "active"
+                ).first()
+                
+                if not existing_pairing:
+                    available_users.append(queue_item)
+        
+        if available_users:
+            # 隨機選擇一個等待中的用戶
+            matched_queue_item = random.choice(available_users)
+            matched_user_id = matched_queue_item.user_id
+            
+            # 創建配對
+            pairing = PairingService.create_pairing(db, user_id, matched_user_id)
+            
+            # 從隊列中移除雙方
+            db.query(PairingQueue).filter(
+                or_(
+                    PairingQueue.user_id == user_id,
+                    PairingQueue.user_id == matched_user_id
+                )
+            ).delete()
+            db.commit()
+            
+            return pairing
+        else:
+            # 沒有可配對的用戶,加入隊列
+            new_queue_item = PairingQueue(
+                user_id=user_id,
+                is_active=True
+            )
+            db.add(new_queue_item)
+            db.commit()
+            
+            return None
+    
+    @staticmethod
+    def _try_match_from_queue(db: Session, user_id: int) -> Optional[Pairing]:
+        """
+        嘗試從隊列中為用戶找到配對
+        """
+        # 獲取所有等待中的用戶(排除自己和已經是好友的用戶)
+        waiting_users = db.query(PairingQueue).filter(
+            PairingQueue.user_id != user_id,
+            PairingQueue.is_active == True
+        ).all()
+        
+        # 過濾掉已是好友的用戶
+        available_users = []
+        for queue_item in waiting_users:
+            if not PairingService.is_friends(db, user_id, queue_item.user_id):
+                # 檢查是否有活躍的配對
+                existing_pairing = db.query(Pairing).filter(
+                    or_(
+                        and_(Pairing.user_id_1 == user_id, Pairing.user_id_2 == queue_item.user_id),
+                        and_(Pairing.user_id_1 == queue_item.user_id, Pairing.user_id_2 == user_id)
+                    ),
+                    Pairing.status == "active"
+                ).first()
+                
+                if not existing_pairing:
+                    available_users.append(queue_item)
+        
+        if available_users:
+            # 隨機選擇一個等待中的用戶
+            matched_queue_item = random.choice(available_users)
+            matched_user_id = matched_queue_item.user_id
+            
+            # 創建配對
+            pairing = PairingService.create_pairing(db, user_id, matched_user_id)
+            
+            # 從隊列中移除雙方
+            db.query(PairingQueue).filter(
+                or_(
+                    PairingQueue.user_id == user_id,
+                    PairingQueue.user_id == matched_user_id
+                )
+            ).delete()
+            db.commit()
+            
+            return pairing
+        
+        return None
+    
+    @staticmethod
+    def leave_pairing_queue(db: Session, user_id: int):
+        """
+        用戶離開配對隊列
+        """
+        db.query(PairingQueue).filter(PairingQueue.user_id == user_id).delete()
+        db.commit()

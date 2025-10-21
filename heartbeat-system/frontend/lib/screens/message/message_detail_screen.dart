@@ -8,15 +8,22 @@ import '../../config/ui_constants.dart';
 import '../../models/message.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/message_provider.dart';
+import '../../widgets/chat_room_countdown.dart';
 
 class MessageDetailScreen extends StatefulWidget {
   final int userId;
   final String userName;
+  final int? chatRoomId;
+  final String? expiresAt;
+  final bool isTemporary;
   
   const MessageDetailScreen({
     Key? key, 
     required this.userId,
     required this.userName,
+    this.chatRoomId,
+    this.expiresAt,
+    this.isTemporary = false,
   }) : super(key: key);
 
   @override
@@ -123,11 +130,38 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.userName),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.userName),
+            if (widget.isTemporary && widget.expiresAt != null)
+              Text(
+                '臨時聊天室',
+                style: TextStyle(fontSize: 12, color: Colors.white70),
+              ),
+          ],
+        ),
         backgroundColor: UIConstants.primaryColor,
+        actions: [
+          if (widget.isTemporary && widget.expiresAt != null)
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: ChatRoomCountdown(
+                expiresAt: widget.expiresAt!,
+                isTemporary: widget.isTemporary,
+              ),
+            ),
+        ],
       ),
       body: Column(
         children: [
+          // 如果是臨時聊天室，顯示提示卡片
+          if (widget.isTemporary && widget.expiresAt != null)
+            ChatRoomCountdownCard(
+              expiresAt: widget.expiresAt!,
+              isTemporary: widget.isTemporary,
+            ),
+          
           Expanded(
             child: Consumer<MessageProvider>(
               builder: (context, messageProvider, _) {

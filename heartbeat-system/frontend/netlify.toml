@@ -1,0 +1,19 @@
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build]
+  publish = "build/web"
+  command = "flutter build web --release --dart-define=API_BASE_URL=$API_BASE_URL --dart-define=WS_BASE_URL=$WS_BASE_URL"
+
+[build.environment]
+  # Flutter SDK 會自動使用最新穩定版
+  FLUTTER_ROOT = "/opt/flutter"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"

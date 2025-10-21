@@ -28,11 +28,16 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     device_uid = Column(String(64), unique=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    name = Column(String(100), default="ESP32 Device")
+    is_online = Column(Boolean, default=False)
+    last_active = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
     
     # 關聯
     owner = relationship("User", back_populates="devices")
     heartbeat_logs = relationship("HeartbeatLog", back_populates="device")
+    pressure_data = relationship("PressureData", back_populates="device", cascade="all, delete-orphan")
 
 class Interaction(Base):
     """互動記錄資料表"""
@@ -137,3 +142,24 @@ class FriendInvitation(Base):
     status = Column(String(20), default="pending")  # "pending", "both_accepted", "rejected"
     created_at = Column(DateTime, server_default=func.now())
     expires_at = Column(DateTime)  # 邀請過期時間
+
+class PressureData(Base):
+    """壓力數據資料表"""
+    __tablename__ = "pressure_data"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    device_id = Column(Integer, ForeignKey("devices.id"))
+    pressure_value = Column(Integer)  # 壓力值
+    timestamp = Column(DateTime, server_default=func.now())
+    
+    # 關聯
+    device = relationship("Device", back_populates="pressure_data")
+
+class PairingQueue(Base):
+    """配對等待隊列"""
+    __tablename__ = "pairing_queue"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime, server_default=func.now())
+    is_active = Column(Boolean, default=True)

@@ -293,3 +293,66 @@ def check_friendship(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"檢查失敗: {str(e)}"
         )
+
+
+@router.post("/random-match")
+def random_match(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    隨機配對其他在線用戶
+    如果找到匹配,創建配對並返回;否則加入等待隊列
+    """
+    try:
+        pairing = PairingService.join_pairing_queue(db, current_user.id)
+        
+        if pairing:
+            # 找到配對
+            other_user_id = pairing.user_id_2 if pairing.user_id_1 == current_user.id else pairing.user_id_1
+            other_user = db.query(User).filter(User.id == other_user_id).first()
+            
+            # 獲取聊天室
+            chat_room = PairingService.get_active_chat_room(db, current_user.id, other_user_id)
+            
+            return {
+                "matched": True,
+                "pairing_id": pairing.id,
+                "other_user_id": other_user_id,
+                "other_user_email": other_user.email if other_user else "Unknown",
+                "chat_room_id": chat_room.id if chat_room else None,
+                "message": "配對成功!已創建臨時聊天室"
+            }
+        else:
+            # 加入隊列等待
+            return {
+                "matched": False,
+                "message": "已加入配對隊列,請稍候..."
+            }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"隨機配對失敗: {str(e)}"
+        )
+
+
+@router.post("/leave-queue")
+def leave_pairing_queue(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    離開配對隊列
+    """
+    try:
+        PairingService.leave_pairing_queue(db, current_user.id)
+        return {
+            "success": True,
+            "message": "已離開配對隊列"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"離開隊列失敗: {str(e)}"
+        )
+

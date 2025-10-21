@@ -171,4 +171,69 @@ class PairingService {
       return false;
     }
   }
+
+  // 隨機配對 (新功能)
+  Future<Map<String, dynamic>> randomMatch(String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/pairing/random-match'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({}),
+    );
+
+    if (response.statusCode == 200) {
+      final String responseBody = utf8.decode(response.bodyBytes);
+      return jsonDecode(responseBody);
+    } else {
+      throw Exception('隨機配對失敗: ${response.statusCode}');
+    }
+  }
+
+  // 離開配對隊列
+  Future<Map<String, dynamic>> leaveQueue(String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/pairing/leave-queue'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({}),
+    );
+
+    if (response.statusCode == 200) {
+      final String responseBody = utf8.decode(response.bodyBytes);
+      return jsonDecode(responseBody);
+    } else {
+      throw Exception('離開隊列失敗: ${response.statusCode}');
+    }
+  }
+
+  // 獲取好友裝置狀態 (新功能)
+  Future<List<Map<String, dynamic>>> getFriendDevices(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/devices/friends/devices'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final String responseBody = utf8.decode(response.bodyBytes);
+      final dynamic parsed = jsonDecode(responseBody);
+      
+      if (parsed is List) {
+        return List<Map<String, dynamic>>.from(parsed);
+      } else if (parsed is Map) {
+        return [Map<String, dynamic>.from(parsed)];
+      }
+      return [];
+    } else {
+      throw Exception('獲取好友裝置失敗: ${response.statusCode}');
+    }
+  }
 }
