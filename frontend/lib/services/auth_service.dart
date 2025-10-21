@@ -1,0 +1,91 @@
+// 認證服務 (auth_service.dart)
+// 功能: 提供使用者認證、註冊相關API調用
+// 相依: http
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../config/app_config.dart';
+import '../models/user.dart';
+
+class AuthService {
+  final String baseUrl = AppConfig.apiBaseUrl;  // 註冊新使用者
+  Future<User> register(String email, String password) async {
+    try {
+      // 使用相對路徑發送請求
+      final path = '/api/auth/register';
+      print('嘗試連接到: $path');
+      
+      final response = await http.post(
+        Uri.parse('$baseUrl$path'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+      
+      print('註冊響應狀態碼: ${response.statusCode}');
+      print('註冊響應內容: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        return User.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('註冊失敗: ${response.body}');
+      }
+    } catch (e) {
+      print('註冊過程中發生錯誤: $e');
+      throw Exception('註冊失敗: $e');
+    }
+  }  // 使用者登入
+  Future<String> login(String email, String password) async {
+    try {
+      // 使用相對路徑發送請求
+      final path = '/api/auth/token';
+      print('嘗試連接到: $path');
+      
+      final response = await http.post(
+        Uri.parse('$baseUrl$path'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+        },
+        body: 'username=${Uri.encodeComponent(email)}&password=${Uri.encodeComponent(password)}',
+      );
+      
+      print('登入響應狀態碼: ${response.statusCode}');
+      print('登入響應內容: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return data['access_token'];
+      } else {
+        throw Exception('登入失敗: ${response.body}');
+      }
+    } catch (e) {
+      print('登入過程中發生錯誤: $e');
+      throw Exception('登入失敗: $e');
+    }
+  }
+    // 獲取使用者資料
+  Future<User> getUserProfile(String token) async {
+    // 使用相對路徑發送請求
+    final path = '/api/users/me';
+    
+    final response = await http.get(
+      Uri.parse('$baseUrl$path'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      return User.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('無法獲取使用者資料');
+    }
+  }
+}

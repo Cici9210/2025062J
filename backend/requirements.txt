@@ -1,0 +1,21 @@
+# 後端需求檔案 (requirements.txt)
+# 功能: 列出所有後端相依套件
+# 使用: pip install -r requirements.txt
+fastapi==0.95.1
+uvicorn==0.22.0
+sqlalchemy==2.0.11
+pydantic==1.10.7
+pydantic[email]==1.10.7
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+mysql-connector-python==8.0.33
+psycopg2-binary==2.9.6
+websockets==11.0.3
+python-multipart==0.0.6
+alembic==1.10.4
+
+# 測試相依套件
+pytest==7.3.1
+pytest-cov==4.1.0
+httpx==0.24.0
+pytest-asyncio==0.21.0
